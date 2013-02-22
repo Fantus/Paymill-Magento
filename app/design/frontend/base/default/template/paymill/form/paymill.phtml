@@ -92,10 +92,22 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
 <script type="text/javascript">
 
 	Event.observe(document,'dom:loaded', function(){
-		$('payment-buttons-container').down('button').writeAttribute("onclick", "paymill_payment_save_override();");
-		
+		if(payment.paymillOverwritten) return;
+		var orgPaymentSave = payment.save;
+		payment.paymillOverwritten = true;
+		payment.save = function(pass){
+			if(pass) return orgPaymentSave.call(payment);
 
+            if (payment.currentMethod == "paymillcc") {
+                paymill_cc_payment_save_override();
+            } else if (payment.currentMethod == "paymillelv") {
+                paymill_elv_payment_save_override();
+            } else {
+            	orgPaymentSave.call(payment);
+            }
+		}
 	});
+	
     $('paymillcc_number').observe('keyup', function() {
         if (paymill.cardType($('paymillcc_number').getValue()) == "Visa") {
             $('paymill_card_type').update("Visa").show();
@@ -105,19 +117,6 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
             $('paymill_card_type').hide();
         }
     });
-    
-
-    if (typeof paymill_payment_save_override != 'function') {
-        function paymill_payment_save_override() {
-            if (payment.currentMethod == "paymillcc") {
-                paymill_cc_payment_save_override();
-            } else if (payment.currentMethod == "paymillelv") {
-                paymill_elv_payment_save_override();
-            } else {
-                payment.save();
-            }
-        }
-    }
     
     // is paymillPayment?
     function paymill_is_paymill_cc_payment() {
@@ -147,7 +146,7 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
                 );
             }
         } else {
-            payment.save();
+            payment.save(true);
         }
     }
 
@@ -159,7 +158,7 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
         } else {
             paymill_cc_debug('Received a token: ' + result.token);
             $('paymill_transaction_token').setValue(result.token);
-            payment.save();
+            payment.save(true);
         }
     }
 

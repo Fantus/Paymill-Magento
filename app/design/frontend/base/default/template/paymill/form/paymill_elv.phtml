@@ -48,20 +48,21 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
 <script type="text/javascript" src="<?php print $this->paymillBridgeEndpoint; ?>"></script>
 <script type="text/javascript">
     Event.observe(document,'dom:loaded', function(){
-    	$('payment-buttons-container').down('button').writeAttribute("onclick", "paymill_payment_save_override();");
-    });
-    
-    if (typeof paymill_payment_save_override != 'function') {
-        function paymill_payment_save_override() {
+		if(payment.paymillOverwritten) return;
+		var orgPaymentSave = payment.save;
+		payment.paymillOverwritten = true;
+		payment.save = function(pass){
+			if(pass) return orgPaymentSave.call(payment);
+
             if (payment.currentMethod == "paymillcc") {
                 paymill_cc_payment_save_override();
             } else if (payment.currentMethod == "paymillelv") {
                 paymill_elv_payment_save_override();
             } else {
-                payment.save();
+            	orgPaymentSave.call(payment);
             }
-        }
-    }
+		}
+    });
     
     // is paymillPayment?
     function paymill_is_paymill_elv_payment() {
@@ -80,12 +81,12 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
                 paymill.createToken({
                     number: accountnumber.getValue(), 
                     bank: banknumber.getValue(), 
-                    accountholder: accountholder.getValue(), 
+                    accountholder: accountholder.getValue()
                     }, paymill_elv_response_handler
                 );
             }
         } else {
-            payment.save();
+            payment.save(true);
         }
     }
 
@@ -97,7 +98,7 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
         } else {
             paymill_elv_debug('Received a token: ' + result.token);
             $('paymill_elv_transaction_token').setValue(result.token);
-            payment.save();
+            payment.save(true);
         }
     }
 
