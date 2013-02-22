@@ -1,0 +1,7 @@
+app/etc/modules/*												app/etc/modules/
+app/code/community/Paymill/Paymillcc/*							app/code/community/Paymill/Paymillcc/
+app/code/community/Paymill/Paymillelv/*							app/code/community/Paymill/Paymillelv/
+app/design/frontend/base/default/template/paymill/*				app/design/frontend/base/default/template/paymill/
+lib/paymill/v2/lib/Services/Paymill/*							lib/paymill/v2/lib/Services/Paymill
+app/locale/de_DE/*												app/locale/de_DE
+app/locale/en_US/*												app/locale/en_US
