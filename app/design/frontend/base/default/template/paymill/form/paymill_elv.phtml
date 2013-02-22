@@ -1,5 +1,4 @@
 <?php $_code=$this->getMethodCode() ?> 
-<script src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>paymill/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>paymill/paymill_styles.css" />
 <!-- 
     The payment form.
@@ -49,12 +48,8 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
 </script>
 <script type="text/javascript" src="<?php print $this->paymillBridgeEndpoint; ?>"></script>
 <script type="text/javascript">
-    jQuery.noConflict();
-
-    jQuery(document).ready(function(){
-
-        jQuery('#payment-buttons-container button').first().attr("onclick", "paymill_payment_save_override();");
-
+    Event.observe(document,'dom:loaded', function(){
+    	$('payment-buttons-container').down('button').writeAttribute("onclick", "paymill_payment_save_override();");
     });
     
     if (typeof paymill_payment_save_override != 'function') {
@@ -80,13 +75,13 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
             paymill_elv_debug('Paymill elv payment method triggered');
             if (paymill_elv_validate()) {
                 paymill_elv_debug('Validation successful');
-                var accountholder = jQuery('#paymillelv_accountholder');
-                var accountnumber = jQuery('#paymillelv_accountnumber');
-                var banknumber = jQuery('#paymillelv_banknumber');
+                var accountholder = $('paymillelv_accountholder');
+                var accountnumber = $('paymillelv_accountnumber');
+                var banknumber = $('paymillelv_banknumber');
                 paymill.createToken({
-                    number: accountnumber.val(), 
-                    bank: banknumber.val(), 
-                    accountholder: accountholder.val(), 
+                    number: accountnumber.getValue(), 
+                    bank: banknumber.getValue(), 
+                    accountholder: accountholder.getValue(), 
                     }, paymill_elv_response_handler
                 );
             }
@@ -102,7 +97,7 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
             paymill_elv_debug('An API error occured ' + error.apierror);
         } else {
             paymill_elv_debug('Received a token: ' + result.token);
-            jQuery('#paymill_elv_transaction_token').val(result.token);
+            $('paymill_elv_transaction_token').setValue(result.token);
             payment.save();
         }
     }
@@ -110,12 +105,12 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
     // validation
     function paymill_elv_validate() {
 
-        var accountholder = jQuery('#paymillelv_accountholder');
-        var accountnumber = jQuery('#paymillelv_accountnumber');
-        var banknumber = jQuery('#paymillelv_banknumber');
-        var banknumber_error = jQuery('#banknumber_error');
-        var accountnumber_error = jQuery('#accountnumber_error');
-        var accountholder_error = jQuery('#accountholder_error');
+        var accountholder = $('paymillelv_accountholder');
+        var accountnumber = $('paymillelv_accountnumber');
+        var banknumber = $('paymillelv_banknumber');
+        var banknumber_error = $('banknumber_error');
+        var accountnumber_error = $('accountnumber_error');
+        var accountholder_error = $('accountholder_error');
 
         var result = true;
 
@@ -131,28 +126,28 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
         error_msg_accountnumber_invalid = "<?php echo Mage::helper('paymillelv')->__("The account number is invalid"); ?>"
         error_msg_banknumber_invalid = "<?php echo Mage::helper('paymillelv')->__("The bank code is invalid"); ?>"
 
-        if (accountholder.val() == "") {
-            accountholder_error.html(error_msg_accountholder_missing).show();
-            accountholder.addClass('validation-failed');
+        if (accountholder.getValue() == "") {
+            accountholder_error.update(error_msg_accountholder_missing).show();
+            accountholder.addClassName('validation-failed');
             result = false;
         } else {
-            accountholder.removeClass('validation-failed');
+            accountholder.removeClassName('validation-failed');
         }
 
-        if (!paymill.validateAccountNumber(accountnumber.val())) {
-            accountnumber_error.html(error_msg_accountnumber_invalid).show();
-            accountnumber.addClass('validation-failed');
+        if (!paymill.validateAccountNumber(accountnumber.getValue())) {
+            accountnumber_error.update(error_msg_accountnumber_invalid).show();
+            accountnumber.addClassName('validation-failed');
             result = false;
         } else {
-            accountnumber.removeClass('validation-failed');
+            accountnumber.removeClassName('validation-failed');
         }
 
-        if (!paymill.validateBankCode(banknumber.val())) {
-            banknumber_error.html(error_msg_banknumber_invalid).show();
-            banknumber.addClass('validation-failed');
+        if (!paymill.validateBankCode(banknumber.getValue())) {
+            banknumber_error.update(error_msg_banknumber_invalid).show();
+            banknumber.addClassName('validation-failed');
             result = false;
         } else {
-            banknumber.removeClass('validation-failed');
+            banknumber.removeClassName('validation-failed');
         }
 
         return result;

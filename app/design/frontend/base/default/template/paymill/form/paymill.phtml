@@ -1,5 +1,4 @@
 <?php $_code=$this->getMethodCode() ?> 
-<script src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>paymill/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>paymill/paymill_styles.css" />
 <!-- 
     The payment form.
@@ -92,24 +91,22 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
 </script>
 <script type="text/javascript" src="<?php print $this->paymillBridgeEndpoint; ?>"></script>
 <script type="text/javascript">
-    jQuery.noConflict();
 
-    jQuery(document).ready(function(){
+	Event.observe(document,'dom:loaded', function(){
+		$('payment-buttons-container').down('button').writeAttribute("onclick", "paymill_payment_save_override();");
+		
 
-        jQuery('#payment-buttons-container button').first().attr("onclick", "paymill_payment_save_override();");
-        
-        // bind change listener to show the cardtype
-        jQuery('#paymillcc_number').change(function() {
-            if (paymill.cardType(jQuery('#paymillcc_number').val()) == "Visa") {
-                jQuery('#paymill_card_type').html("Visa").show();
-            } else if (paymill.cardType(jQuery('#paymillcc_number').val()) == "MasterCard") {
-                jQuery('#paymill_card_type').html("MasterCard").show();
-            } else {
-                jQuery('#paymill_card_type').hide();
-            }
-        });
-
+	});
+    $('paymillcc_number').observe('keyup', function() {
+        if (paymill.cardType($('paymillcc_number').getValue()) == "Visa") {
+            $('paymill_card_type').update("Visa").show();
+        } else if (paymill.cardType($('paymillcc_number').getValue()) == "MasterCard") {
+            $('paymill_card_type').update("MasterCard").show();
+        } else {
+            $('paymill_card_type').hide();
+        }
     });
+    
 
     if (typeof paymill_payment_save_override != 'function') {
         function paymill_payment_save_override() {
@@ -134,18 +131,18 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
             paymill_cc_debug('Paymill payment method triggered');
             if (paymill_cc_validate()) {
                 paymill_cc_debug('Validation successful');
-                var cardholder = jQuery('#paymillcc_cardholder');
-                var number = jQuery('#paymillcc_number');
-                var expiry_month = jQuery('#paymillcc_expiry_month');
-                var expiry_year = jQuery('#paymillcc_expiry_year');
-                var cvc = jQuery('#paymillcc_cvc');
+                var cardholder = $('paymillcc_cardholder');
+                var number = $('paymillcc_number');
+                var expiry_month = $('paymillcc_expiry_month');
+                var expiry_year = $('paymillcc_expiry_year');
+                var cvc = $('paymillcc_cvc');
                 paymill.createToken({
-                    number: number.val(), 
-                    exp_month: expiry_month.val(), 
-                    exp_year: expiry_year.val(), 
-                    cvc: cvc.val(),
-                    cardholder: cardholder.val(),
-                    amount_int: jQuery('#paymill_order_amount').val(),
+                    number: number.getValue(), 
+                    exp_month: expiry_month.getValue(), 
+                    exp_year: expiry_year.getValue(), 
+                    cvc: cvc.getValue(),
+                    cardholder: cardholder.getValue(),
+                    amount_int: $('paymill_order_amount').getValue(),
                     currency: '<?php print $this->paymillPaymentCurrency; ?>'
                     }, paymill_cc_response_handler
                 );
@@ -162,7 +159,7 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
             paymill_cc_debug('An API error occured ' + error.apierror);
         } else {
             paymill_cc_debug('Received a token: ' + result.token);
-            jQuery('#paymill_transaction_token').val(result.token);
+            $('paymill_transaction_token').setValue(result.token);
             payment.save();
         }
     }
@@ -170,15 +167,15 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
     // validation
     function paymill_cc_validate() {
 
-        var cardholder = jQuery('#paymillcc_cardholder');
-        var number = jQuery('#paymillcc_number');
-        var expiry_month = jQuery('#paymillcc_expiry_month');
-        var expiry_year = jQuery('#paymillcc_expiry_year');
-        var cvc = jQuery('#paymillcc_cvc');
-        var cvc_error = jQuery('#cvc_error');
-        var expiry_error = jQuery('#expiry_error');
-        var number_error = jQuery('#number_error');
-        var cardholder_error = jQuery('#cardholder_error');
+        var cardholder = $('paymillcc_cardholder');
+        var number = $('paymillcc_number');
+        var expiry_month = $('paymillcc_expiry_month');
+        var expiry_year = $('paymillcc_expiry_year');
+        var cvc = $('paymillcc_cvc');
+        var cvc_error = $('cvc_error');
+        var expiry_error = $('expiry_error');
+        var number_error = $('number_error');
+        var cardholder_error = $('cardholder_error');
 
         var result = true;
 
@@ -196,38 +193,38 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
         error_msg_expiry_invalid = "<?php echo Mage::helper('paymillcc')->__('The expiration date is invalid'); ?>";
         error_msg_cvc_invalid = "<?php echo Mage::helper('paymillcc')->__('The verification number is invalid'); ?>";
 
-        if (cardholder.val() == "") {
-            cardholder_error.html(error_msg_cardholder_missing).show();
-            cardholder.addClass('validation-failed');
+        if (cardholder.getValue() == "") {
+            cardholder_error.update(error_msg_cardholder_missing).show();
+            cardholder.addClassName('validation-failed');
             result = false;
         } else {
-            cardholder.removeClass('validation-failed');
+            cardholder.removeClassName('validation-failed');
         }
 
-        if (!paymill.validateCardNumber(number.val())) {
-            number_error.html(error_msg_cardnumber_invalid).show();
-            number.addClass('validation-failed');
+        if (!paymill.validateCardNumber(number.getValue())) {
+            number_error.update(error_msg_cardnumber_invalid).show();
+            number.addClassName('validation-failed');
             result = false;
         } else {
-            number.removeClass('validation-failed');
+            number.removeClassName('validation-failed');
         }
 
-        if (!paymill.validateCvc(cvc.val())) {
-            cvc_error.html(error_msg_cvc_invalid).show();
-            cvc.addClass('validation-failed');
+        if (!paymill.validateCvc(cvc.getValue())) {
+            cvc_error.update(error_msg_cvc_invalid).show();
+            cvc.addClassName('validation-failed');
             result = false;
         } else {
-            cvc.removeClass('validation-failed');
+            cvc.removeClassName('validation-failed');
         }
 
-        if (!paymill.validateExpiry(expiry_month.val(), expiry_year.val())) {
-            expiry_error.html(error_msg_expiry_invalid).show();
-            expiry_month.addClass('validation-failed');
-            expiry_year.addClass('validation-failed');
+        if (!paymill.validateExpiry(expiry_month.getValue(), expiry_year.getValue())) {
+            expiry_error.update(error_msg_expiry_invalid).show();
+            expiry_month.addClassName('validation-failed');
+            expiry_year.addClassName('validation-failed');
             result = false;
         } else {
-            expiry_month.removeClass('validation-failed');
-            expiry_year.removeClass('validation-failed');
+            expiry_month.removeClassName('validation-failed');
+            expiry_year.removeClassName('validation-failed');
         }
 
         return result;
@@ -246,17 +243,17 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
             paymill_cc_debug('Paymill payment method triggered');
             if (paymill_cc_validate()) {
                 paymill_cc_debug('Validation successful');
-                var cardholder = jQuery('#paymillcc_cardholder');
-                var number = jQuery('#paymillcc_number');
-                var expiry_month = jQuery('#paymillcc_expiry_month');
-                var expiry_year = jQuery('#paymillcc_expiry_year');
-                var cvc = jQuery('#paymillcc_cvc');
+                var cardholder = $('paymillcc_cardholder');
+                var number = $('paymillcc_number');
+                var expiry_month = $('paymillcc_expiry_month');
+                var expiry_year = $('paymillcc_expiry_year');
+                var cvc = $('paymillcc_cvc');
                 paymill.createToken({
-                    number: number.val(), 
-                    exp_month: expiry_month.val(), 
-                    exp_year: expiry_year.val(), 
-                    cvc: cvc.val(),
-                    cardholder: cardholder.val(),
+                    number: number.getValue(), 
+                    exp_month: expiry_month.getValue(), 
+                    exp_year: expiry_year.getValue(), 
+                    cvc: cvc.getValue(),
+                    cardholder: cardholder.getValue(),
                     amount: '<?php print $this->paymillPaymentAmount; ?>',
                     currency: '<?php print $this->paymillPaymentCurrency; ?>'
                     }, function(error, result) {
@@ -266,7 +263,7 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
                             return false;
                         } else {
                             paymill_cc_debug('Received a token: ' + result.token);
-                            jQuery('#paymill_transaction_token').val(result.token);
+                            $('paymill_transaction_token').setValue(result.token);
                             onestep_callback();
                         }
                     }
