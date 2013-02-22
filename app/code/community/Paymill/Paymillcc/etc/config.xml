@@ -52,6 +52,13 @@
                 </Paymill_Paymillcc>
             </modules>
         </translate>
+        <layout>
+            <updates>
+                <paymillcc>
+                    <file>paymill_paymillcc.xml</file>
+                </paymillcc>
+            </updates>
+        </layout>
     </frontend>
     <adminhtml>
         <translate>

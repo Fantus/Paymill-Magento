@@ -2,6 +2,9 @@ app/etc/modules/*												app/etc/modules/
 app/code/community/Paymill/Paymillcc/*							app/code/community/Paymill/Paymillcc/
 app/code/community/Paymill/Paymillelv/*							app/code/community/Paymill/Paymillelv/
 app/design/frontend/base/default/template/paymill/*				app/design/frontend/base/default/template/paymill/
+app/design/frontend/base/default/layout/*						app/design/frontend/base/default/layout/
 lib/paymill/v2/lib/Services/Paymill/*							lib/paymill/v2/lib/Services/Paymill
+skin/frontend/base/default/images/paymill/*						skin/frontend/base/default/images/paymill/
+skin/frontend/base/default/css/paymill/*						skin/frontend/base/default/css/paymill/
 app/locale/de_DE/*												app/locale/de_DE
 app/locale/en_US/*												app/locale/en_US

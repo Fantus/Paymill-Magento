@@ -52,6 +52,13 @@
                 </Paymill_Paymillelv>
             </modules>
         </translate>
+        <layout>
+            <updates>
+                <paymillcc>
+                    <file>paymill_paymillelv.xml</file>
+                </paymillcc>
+            </updates>
+        </layout>
     </frontend>
     <adminhtml>
         <translate>
