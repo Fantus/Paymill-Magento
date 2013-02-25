@@ -61,7 +61,7 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
             } else {
             	orgPaymentSave.call(payment);
             }
-		}
+		};
     });
     
     // is paymillPayment?
@@ -123,8 +123,8 @@ API enpoint: <?php print $this->paymillApiEndpoint; ?>
 
         // error messages
         error_msg_accountholder_missing = "<?php echo Mage::helper('paymillelv')->__("The account holder is missing"); ?>";
-        error_msg_accountnumber_invalid = "<?php echo Mage::helper('paymillelv')->__("The account number is invalid"); ?>"
-        error_msg_banknumber_invalid = "<?php echo Mage::helper('paymillelv')->__("The bank code is invalid"); ?>"
+        error_msg_accountnumber_invalid = "<?php echo Mage::helper('paymillelv')->__("The account number is invalid"); ?>";
+        error_msg_banknumber_invalid = "<?php echo Mage::helper('paymillelv')->__("The bank code is invalid"); ?>";
 
         if (accountholder.getValue() == "") {
             accountholder_error.update(error_msg_accountholder_missing).show();
