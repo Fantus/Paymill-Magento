@@ -16,6 +16,10 @@ class Paymill_Paymillelv_Block_Info_Paymill extends Mage_Payment_Block_Info_Cc
 			$order = Mage::registry('current_order');
         	if(!$order && Mage::registry('current_shipment'))	$order = Mage::registry('current_shipment')->getOrder();
         	if(!$order && Mage::registry('current_invoice'))	$order = Mage::registry('current_invoice')->getOrder();
+        	if(!$order && Mage::registry('current_creditmemo'))	$order = Mage::registry('current_creditmemo')->getOrder();
+        	if(!$order && Mage::app()->getRequest()->getParam('order_id'))
+        		$order = Mage::getModel('sales/order')->load(Mage::app()->getRequest()->getParam('order_id'));
+        	
             $additionalInformation = array(
                 'Transaction ID' => ' ' . $order->getPayment()
                                             ->getAdditionalInformation('paymill_transaction_id')
